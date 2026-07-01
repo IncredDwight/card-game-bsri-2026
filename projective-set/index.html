@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projective Set — clear the deck</title>
+<meta name="description" content="A solitaire logic game on GF(2)^6: find triples of cards where every symbol appears an even number of times.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="title-block">
+      <h1 class="title">Projective<span class="title-accent">Set</span></h1>
+      <p class="subtitle">Clear the deck — find lines of three.</p>
+    </div>
+
+    <dl class="scoreboard" aria-label="Game stats">
+      <div class="stat">
+        <dt>Deck</dt>
+        <dd id="deck-count">63</dd>
+      </div>
+      <div class="stat">
+        <dt>Board</dt>
+        <dd id="board-count">9</dd>
+      </div>
+      <div class="stat">
+        <dt>Lines</dt>
+        <dd id="sets-count">0</dd>
+      </div>
+    </dl>
+  </header>
+
+  <main class="board-wrap">
+    <div id="board" class="board" role="group" aria-label="Cards in play"></div>
+  </main>
+
+  <p id="message" class="message message-info" role="status" aria-live="polite">
+    Find three cards where every symbol appears an even number of times.
+  </p>
+
+  <footer class="controls">
+    <button id="hint-btn" class="btn btn-accent" type="button">Hint</button>
+    <button id="deal-btn" class="btn btn-neutral" type="button">Deal 3 more</button>
+    <button id="new-game-btn" class="btn btn-ghost" type="button">New game</button>
+  </footer>
+
+  <details class="rules">
+    <summary>How a line works</summary>
+    <div class="rules-body">
+      <p>Every card carries some subset of six symbols — blue square, green circle, red heart, purple triangle, yellow star, orange moon — and no two cards in the deck carry the same subset. That gives <strong>2⁶ − 1 = 63</strong> cards, one for every non-empty combination.</p>
+      <p>Tap three cards to test them. They form a valid <strong>line</strong> when every symbol shows up an even number of times across the three — meaning each symbol is on none of them, or exactly two of them, never one or three. Confirmed lines are cleared from the board and replaced from the deck. Clear the entire deck to win.</p>
+      <p class="rules-note">Under the hood this is binary addition without carrying: XOR the six-bit codes of any three cards together and a valid line always lands on <code>000000</code>.</p>
+    </div>
+  </details>
+
+</div>
+
+<script src="js/symbols.js"></script>
+<script src="js/deck.js"></script>
+<script src="js/gameLogic.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

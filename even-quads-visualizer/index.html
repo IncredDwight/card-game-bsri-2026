@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Even Quads — 6D Hypercube Slicer</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>Even <span>Quads</span> — 6D Hypercube Slicer</h1>
+    <p>x1…x6 are binary. Three attributes — Shape, Color, Count — each use two bits (4 options). Fix any three bits to slice out a cube; the other three stay free and become its X/Y/Z axes.</p>
+  </header>
+
+  <div id="layout">
+    <aside id="controls">
+      <div class="block">
+        <h2>Parameters</h2>
+
+        <div class="attr-group">
+          <div class="attr-name">Shape — x1 x2</div>
+          <div class="bitrow" data-bit="0">
+            <div class="lbl"><b>x1</b> · hi</div>
+            <div class="seg" data-row="0"></div>
+          </div>
+          <div class="bitrow" data-bit="1">
+            <div class="lbl"><b>x2</b> · lo</div>
+            <div class="seg" data-row="1"></div>
+          </div>
+        </div>
+
+        <div class="attr-group">
+          <div class="attr-name">Color — x3 x4</div>
+          <div class="bitrow" data-bit="2">
+            <div class="lbl"><b>x3</b> · hi</div>
+            <div class="seg" data-row="2"></div>
+          </div>
+          <div class="bitrow" data-bit="3">
+            <div class="lbl"><b>x4</b> · lo</div>
+            <div class="seg" data-row="3"></div>
+          </div>
+        </div>
+
+        <div class="attr-group">
+          <div class="attr-name">Count — x5 x6</div>
+          <div class="bitrow" data-bit="4">
+            <div class="lbl"><b>x5</b> · hi</div>
+            <div class="seg" data-row="4"></div>
+          </div>
+          <div class="bitrow" data-bit="5">
+            <div class="lbl"><b>x6</b> · lo</div>
+            <div class="seg" data-row="5"></div>
+          </div>
+        </div>
+
+        <div id="freecount" class="freecount">Free: 3 / 3 ✓</div>
+        <div class="actions">
+          <button class="btn primary" id="btn-reset">Reset</button>
+          <button class="btn" id="btn-shuffle">Shuffle fixed</button>
+        </div>
+      </div>
+
+      <div class="block">
+        <h2>Legend</h2>
+        <div class="legend-row">
+          <span style="width:54px;color:var(--text-dim)">Shape</span>
+          <span class="icons" id="legend-shapes"></span>
+        </div>
+        <div class="legend-row">
+          <span style="width:54px;color:var(--text-dim)">Color</span>
+          <span class="swatch" style="background:var(--c0)"></span>
+          <span class="swatch" style="background:var(--c1)"></span>
+          <span class="swatch" style="background:var(--c2)"></span>
+          <span class="swatch" style="background:var(--c3)"></span>
+        </div>
+        <div class="legend-row">
+          <span style="width:54px;color:var(--text-dim)">Count</span>
+          <span class="legend-counts" id="legend-counts"></span>
+        </div>
+      </div>
+    </aside>
+
+    <main id="viewport">
+      <canvas id="three-canvas"></canvas>
+      <div id="empty-state">
+        <div class="big" id="empty-count">1 / 3</div>
+        <p>Pick exactly three parameters to leave <b>Free</b> — those become the cube's axes. Everything else stays fixed and defines which slice of the 64-card deck you're looking at.</p>
+      </div>
+      <div id="axis-caption"></div>
+      <div id="hint">drag to orbit · scroll to zoom · click a card to select</div>
+    </main>
+
+    <aside id="analysis">
+      <div class="block">
+        <h2>Selected quad (<span id="sel-count">0</span>/4)</h2>
+        <div class="slots" id="slots"></div>
+        <button class="btn" id="btn-clear" style="width:100%">Clear selection</button>
+      </div>
+
+      <div class="block">
+        <h2>Validity</h2>
+        <p style="font-size:11px;color:var(--text-dim);margin:0 0 10px 0;line-height:1.5;">Valid when each attribute's four 2-bit codes XOR to <span style="font-family:var(--font-mono)">00</span> — all same, all different, or split into two repeated pairs.</p>
+        <div id="attrlines"></div>
+        <div id="verdict">select 4 cards</div>
+      </div>
+
+      <div class="block">
+        <h2>Geometry in this cube</h2>
+        <div id="geom">select 4 cards to classify their shape</div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script src="js/three.min.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
