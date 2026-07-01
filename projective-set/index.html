@@ -52,14 +52,7 @@
     <button id="new-game-btn" class="btn btn-ghost" type="button">New game</button>
   </footer>
 
-  <details class="rules">
-    <summary>How a line works</summary>
-    <div class="rules-body">
-      <p>Every card carries some subset of six symbols — blue square, green circle, red heart, purple triangle, yellow star, orange moon — and no two cards in the deck carry the same subset. That gives <strong>2⁶ − 1 = 63</strong> cards, one for every non-empty combination.</p>
-      <p>Tap three cards to test them. They form a valid <strong>line</strong> when every symbol shows up an even number of times across the three — meaning each symbol is on none of them, or exactly two of them, never one or three. Confirmed lines are cleared from the board and replaced from the deck. Clear the entire deck to win.</p>
-      <p class="rules-note">Under the hood this is binary addition without carrying: XOR the six-bit codes of any three cards together and a valid line always lands on <code>000000</code>.</p>
-    </div>
-  </details>
+  
 
 </div>
 
