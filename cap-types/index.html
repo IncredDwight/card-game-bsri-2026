@@ -367,6 +367,7 @@
       <input type="checkbox" id="typesToggle">
       <span>Show pick types</span>
     </label>
+    <button id="printTemplateBtn" title="Print an equation for each dependent card: which basis cards it sums to">Print Template</button>
     <div class="pill"><button id="countBasesBtn" title="Count the valid bases">Count Bases</button>
     <label class="inline">
       <span>List first</span>
@@ -413,6 +414,15 @@
       </div>
       <div id="typesCurrent" class="muted"></div>
       <div id="typesResults" class="muted">Turn on "Show pick types" with the basis face up.</div>
+    </div>
+
+    <div id="templatePanel" style="margin-top:8px;display:none;">
+      <div class="pill" style="display:inline-block;border:1px solid var(--border);border-radius:999px;padding:6px 10px;margin-bottom:8px;">
+        <strong>Template</strong>
+      </div>
+      <div id="templateMeta" class="muted" style="margin-bottom:6px;"></div>
+      <pre id="templateResults" class="muted" style="white-space:pre-wrap; font-family:ui-monospace,Menlo,Consolas,monospace; background:#fff; border:1px solid var(--border); border-radius:8px; padding:10px; margin:0;">Click "Print Template" with the basis face up.</pre>
+      <button id="templateCopyBtn" style="margin-top:8px;">Copy</button>
     </div>
 
   </div>
@@ -2062,12 +2072,91 @@ editEnabled = !!on;
   });
   // ===== end Pick Type Analysis =====
 
+  // ===== Print Template =====
+  // For every currently face-up DEPENDENT (non-red) card, print an equation
+  // showing which basis (red) cards' current values XOR together to produce it:
+  //   x1 = <basis value>, <basis value>, ... = <resulting card value>
+  // Basis membership comes from redDepsForPos (the structural support over the
+  // 9 red slots); the actual numbers shown are each red slot's CURRENT value,
+  // so this stays correct after a custom or randomized basis, not just the
+  // standard layout.
+  const printTemplateBtn = document.getElementById('printTemplateBtn');
+  const templatePanel = document.getElementById('templatePanel');
+  const templateMeta = document.getElementById('templateMeta');
+  const templateResults = document.getElementById('templateResults');
+  const templateCopyBtn = document.getElementById('templateCopyBtn');
+
+  function buildTemplateLines(){
+    if(basisMode){
+      return {ok:false, msg:'Finish placing the basis first, then Print Template will work again.'};
+    }
+    const reds = redPositionsArray();
+    const missing = reds.filter(p => !(cells[p] && cells[p].faceup));
+    if(missing.length){
+      return {ok:false, msg:'Print Template needs all ' + reds.length + ' basis (red) cards face-up ('
+        + (reds.length - missing.length) + '/' + reds.length + ' up). Use "Turn Red Locations Face Up" or a basis action.'};
+    }
+    const extras = [];
+    faceUpPositions.forEach(p => { if(!isBasisPos(p)) extras.push(p); });
+    extras.sort((a,b)=>a-b);
+    if(extras.length === 0){
+      return {ok:true, lines:[], note:'No dependent (non-basis) cards are face-up yet — nothing to print.'};
+    }
+    const lines = extras.map((p,i)=>{
+      const support = redDepsForPos(p);                       // red slot positions this card depends on
+      const basisVals = support.map(bp => labelFor(cells[bp].value)); // their CURRENT values
+      const resultVal = labelFor(cells[p].value);
+      return 'x' + (i+1) + ' = ' + basisVals.join(', ') + ' = ' + resultVal;
+    });
+    return {ok:true, lines};
+  }
+
+  function renderTemplate(){
+    if(!templatePanel) return;
+    templatePanel.style.display = 'block';
+    const res = buildTemplateLines();
+    if(!res.ok){
+      if(templateMeta) templateMeta.textContent = '';
+      if(templateResults) templateResults.textContent = res.msg;
+      return;
+    }
+    if(res.lines.length === 0){
+      if(templateMeta) templateMeta.textContent = '';
+      if(templateResults) templateResults.textContent = res.note;
+      return;
+    }
+    if(templateMeta) templateMeta.textContent = res.lines.length + ' dependent card' + (res.lines.length>1?'s':'');
+    if(templateResults) templateResults.textContent = res.lines.join('\n');
+  }
+
+  printTemplateBtn?.addEventListener('click', ()=>{
+    renderTemplate();
+    try{ templatePanel?.scrollIntoView({behavior:'smooth', block:'nearest'}); }catch(_){}
+  });
+
+  templateCopyBtn?.addEventListener('click', ()=>{
+    const text = templateResults ? templateResults.textContent : '';
+    if(!text) return;
+    const done = ()=>{
+      const old = templateCopyBtn.textContent;
+      templateCopyBtn.textContent = 'Copied!';
+      setTimeout(()=>{ templateCopyBtn.textContent = old; }, 1200);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(()=>{});
+    }
+  });
+  // ===== end Print Template =====
+
   // Hide bases panel when deck changes
 
   document.getElementById('deck')?.addEventListener('change', ()=>{
     if(basesPanel) basesPanel.style.display = 'none';
     if(basesMeta) basesMeta.textContent = '';
     if(basesResults) basesResults.textContent = 'Results will appear here.';
+    if(templatePanel) templatePanel.style.display = 'none';
+    if(templateMeta) templateMeta.textContent = '';
+    if(templateResults) templateResults.textContent = 'Click "Print Template" with the basis face up.';
   });
 
 })(); 
